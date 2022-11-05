@@ -15,8 +15,8 @@ class Xiaoyuan(object):
     def __init__(self):
         self.url = 'http://10.10.10.3'
         self.options = webdriver.EdgeOptions()
-        # self.options.add_argument('--headless')
-        # self.options.add_argument('--disable-gpu')
+        self.options.add_argument('--headless')
+        self.options.add_argument('--disable-gpu')
         # self.options.add_experimental_option('excludeSwitches', ['enable-logging'])
         self.flag = False
         self.s = Service('msedgedriver.exe')
@@ -83,7 +83,7 @@ class Xiaoyuan(object):
     # 注销函数
     def login_out(self):
         self.time_tuple = localtime(time())
-        sleep(4)
+        sleep(4*60*60)
         print("正在为您释放登录,当前时间为：{}点{}分".format(self.time_tuple[3],self.time_tuple[4]))
         self.driver.find_element(by=By.XPATH, value='//*[@id="logout"]').click()
         self.driver.find_element(by=By.XPATH, value='/html/body/div[1]/div/div[2]/div[3]/button[1]').click()
