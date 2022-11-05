@@ -15,12 +15,11 @@ class Xiaoyuan(object):
     def __init__(self):
         self.url = 'http://10.10.10.3'
         self.options = webdriver.EdgeOptions()
-        self.options.add_argument('--headless')
-        self.options.add_argument('--disable-gpu')
+        # self.options.add_argument('--headless')
+        # self.options.add_argument('--disable-gpu')
         # self.options.add_experimental_option('excludeSwitches', ['enable-logging'])
         self.flag = False
         self.s = Service('msedgedriver.exe')
-        self.driver = webdriver.Edge(service=self.s, options=self.options)
         # self.driver = webdriver.Chrome(service=self.s,options=self.options)
         self.username = None
         self.password = None
@@ -28,6 +27,7 @@ class Xiaoyuan(object):
         self.dic = {}
 
     def run(self):
+        self.driver = webdriver.Edge(service=self.s, options=self.options)
         try:
             self.driver.get(self.url)
         except:
@@ -37,6 +37,7 @@ class Xiaoyuan(object):
         print('正在检测登录状态')
         if self.flag == False:
             print('检测到校园网未登录，正在帮你登录')
+            self.driver.close()
             self.login_in()
         else:
             if self.time_tuple[3] + 4 >= 24:
@@ -47,6 +48,8 @@ class Xiaoyuan(object):
 
     # 解析网页数据，并进行账号密码的输入，点击登录按钮
     def login_in(self):
+        self.driver = webdriver.Edge(service=self.s, options=self.options)
+        self.driver.get(self.url)
         if exists('账号密码.json'):
             self.red_user()
         else:
@@ -80,12 +83,13 @@ class Xiaoyuan(object):
     # 注销函数
     def login_out(self):
         self.time_tuple = localtime(time())
-        sleep(4*60*60)
+        sleep(4)
         print("正在为您释放登录,当前时间为：{}点{}分".format(self.time_tuple[3],self.time_tuple[4]))
-
         self.driver.find_element(by=By.XPATH, value='//*[@id="logout"]').click()
         self.driver.find_element(by=By.XPATH, value='/html/body/div[1]/div/div[2]/div[3]/button[1]').click()
+        self.driver.close()
         self.login_in()
+
 
     def red_user(self):
         with open('账号密码.json', 'r', encoding='utf8') as f:
