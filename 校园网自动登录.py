@@ -38,30 +38,26 @@ class Xiaoyuan(object):
         if self.flag == False:
             print('检测到校园网未登录，正在帮你登录')
             # 关闭浏览器,减少资源占用
-            self.driver.close()
             self.login_in()
         else:
+            self.driver.close()
             self.login_out()
 
     # 解析网页数据，并进行账号密码的输入，点击登录按钮
     def login_in(self):
-        self.driver = webdriver.Edge(service=self.s, options=self.options)
-        self.driver.get(self.url)
         if exists('账号密码.json'):
             self.red_user()
         else:
             self.write_file()
-        sleep(0.5)
+        sleep(1)
         print("当前账号为：{}密码为：{},如需修改请用记事本打开".format(self.username, self.password) + getcwd() + r"\账号密码.json")
         self.driver.find_element(by=By.XPATH, value='//*[@id="username"]').send_keys(self.username)
         self.driver.find_element(by=By.XPATH, value='//*[@id="password"]').send_keys(self.password)
         self.driver.find_element(by=By.XPATH, value='//*[@id="login-account"]').click()
         print('正在检测是否登录成功')
         self.boolen_login()
-        if self.flag==False:
+        if self.flag == False:
             print("登录失败,请自行打开浏览器进行尝试登录")
-
-
 
     # 进行登录判断
     def boolen_login(self):
@@ -74,31 +70,29 @@ class Xiaoyuan(object):
             if self.flag == True:
                 if self.time_tuple[3] + 4 >= 24:
                     print('检测到您已登录，请勿关闭本程序，下次释放重登时间为明日{}点{}分'.format(self.time_tuple[3] + 4 - 24, self.time_tuple[4]))
+                    self.driver.close()
+                    self.login_out()
                 else:
                     print('检测到您已登录，请勿关闭本程序，下次释放重登时间为{}点{}分'.format(self.time_tuple[3] + 4, self.time_tuple[4]))
                 # 关闭浏览器,减少资源占用
                 self.driver.close()
                 self.login_out()
             else:
-                self.flag=False
+                self.flag = False
 
     # 注销函数
     def login_out(self):
-
-        
-        self.time_tuple = localtime(time())
-        
         sleep(4*60*60)
+        self.time_tuple = localtime(time())
         print("正在为您释放登录,当前时间为：{}点{}分".format(self.time_tuple[3], self.time_tuple[4]))
         self.driver = webdriver.Edge(service=self.s, options=self.options)
         self.driver.get(url=self.url)
+        sleep(1.5)
         # 点击注销按钮
         self.driver.find_element(by=By.XPATH, value='//*[@id="logout"]').click()
         # 点击确认按钮
         self.driver.find_element(by=By.XPATH, value='/html/body/div[1]/div/div[2]/div[3]/button[1]').click()
-        self.driver.close()
         self.login_in()
-
 
     def red_user(self):
         with open('账号密码.json', 'r', encoding='utf8') as f:
@@ -130,7 +124,7 @@ ______   ______  _  __ ___________  \_ |__ ___.__. _______|  |__   ____   ____  
 |   __/ \____/ \/\_/  \___  >__|     |___  / ____| /_____ \___|  /\___  >___  /|____/ 
 |__|                      \/             \/\/            \/    \/     \/_____/  
 
-              
+
 欢迎使用鹧鸪校园网登录程序，当前系统时间为   {}年{}月{}日{}时{}分 ，正在拉起程序进行登录中
                 '''.format(self.time_tuple[0], self.time_tuple[1], self.time_tuple[2], self.time_tuple[3],
                            self.time_tuple[4]))
