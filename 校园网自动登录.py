@@ -15,8 +15,8 @@ class Xiaoyuan(object):
     def __init__(self):
         self.url = 'http://10.10.10.3'
         self.options = webdriver.EdgeOptions()
-        self.options.add_argument('--headless')
-        self.options.add_argument('--disable-gpu')
+        # self.options.add_argument('--headless')
+        # self.options.add_argument('--disable-gpu')
         # self.options.add_experimental_option('excludeSwitches', ['enable-logging'])
         self.flag = False
         self.s = Service('msedgedriver.exe')
@@ -25,7 +25,7 @@ class Xiaoyuan(object):
         self.password = None
         self.time_tuple = localtime(time())
         self.dic = {}
-
+    # 主调函数
     def run(self):
         self.driver = webdriver.Edge(service=self.s, options=self.options)
         try:
@@ -66,10 +66,14 @@ class Xiaoyuan(object):
                 print('检测到您已登录，请勿关闭本程序，下次释放重登时间为明日{}点{}分'.format(self.time_tuple[3] + 4 - 24, self.time_tuple[4]))
             else:
                 print('检测到您已登录，请勿关闭本程序，下次释放重登时间为{}点{}分'.format(self.time_tuple[3] + 4, self.time_tuple[4]))
+            # 关闭浏览器,减少资源占用
+            self.driver.close()
             self.login_out()
         else:
             print('登陆失败，请自行打开浏览器检查')
+            # 关闭浏览器,减少资源占用
             self.driver.close()
+
 
     # 进行登录判断
     def boolen_login(self):
@@ -90,7 +94,7 @@ class Xiaoyuan(object):
         self.driver.close()
         self.login_in()
 
-
+    # 读取账号
     def red_user(self):
         with open('账号密码.json', 'r', encoding='utf8') as f:
             a = f.read()
@@ -101,7 +105,7 @@ class Xiaoyuan(object):
                 self.username = js["username"]
                 self.password = js["password"]
             f.close()
-
+    # 如果配置文件有误，或者不存在，则引导用户创建
     def write_file(self):
         print("配置文件有误，或不存在，请按提示操作")
         with open('账号密码.json', 'w', encoding='utf8') as f:
@@ -111,7 +115,7 @@ class Xiaoyuan(object):
             f.write(dumps(self.dic))
             f.close()
             self.login_in()
-
+    # 简单一个菜单
     def caidan(self):
         print(r'''
                                     ___.                  .__                         
