@@ -15,9 +15,9 @@ class Xiaoyuan(object):
     def __init__(self):
         self.url = 'http://10.10.10.3'
         self.options = webdriver.EdgeOptions()
-        # self.options.add_argument('--headless')
-        # self.options.add_argument('--disable-gpu')
-        # self.options.add_experimental_option('excludeSwitches', ['enable-logging'])
+        self.options.add_argument('--headless')
+        self.options.add_argument('--disable-gpu')
+        self.options.add_experimental_option('excludeSwitches', ['enable-logging'])
         self.flag = False
         self.s = Service('msedgedriver.exe')
         # self.driver = webdriver.Chrome(service=self.s,options=self.options)
@@ -25,7 +25,7 @@ class Xiaoyuan(object):
         self.password = None
         self.time_tuple = localtime(time())
         self.dic = {}
-    # 主调函数
+
     def run(self):
         self.driver = webdriver.Edge(service=self.s, options=self.options)
         try:
@@ -37,13 +37,10 @@ class Xiaoyuan(object):
         print('正在检测登录状态')
         if self.flag == False:
             print('检测到校园网未登录，正在帮你登录')
+            # 关闭浏览器,减少资源占用
             self.driver.close()
             self.login_in()
         else:
-            if self.time_tuple[3] + 4 >= 24:
-                print('检测到您已登录，请勿关闭本程序，下次释放重登时间为明日{}点{}分'.format(self.time_tuple[3] + 4 - 24, self.time_tuple[4]))
-            else:
-                print('检测到您已登录，请勿关闭本程序，下次释放重登时间为{}点{}分'.format(self.time_tuple[3] + 4, self.time_tuple[4]))
             self.login_out()
 
     # 解析网页数据，并进行账号密码的输入，点击登录按钮
@@ -61,18 +58,9 @@ class Xiaoyuan(object):
         self.driver.find_element(by=By.XPATH, value='//*[@id="login-account"]').click()
         print('正在检测是否登录成功')
         self.boolen_login()
-        if self.flag == True:
-            if self.time_tuple[3] + 4 >= 24:
-                print('检测到您已登录，请勿关闭本程序，下次释放重登时间为明日{}点{}分'.format(self.time_tuple[3] + 4 - 24, self.time_tuple[4]))
-            else:
-                print('检测到您已登录，请勿关闭本程序，下次释放重登时间为{}点{}分'.format(self.time_tuple[3] + 4, self.time_tuple[4]))
-            # 关闭浏览器,减少资源占用
-            self.driver.close()
-            self.login_out()
-        else:
-            print('登陆失败，请自行打开浏览器检查')
-            # 关闭浏览器,减少资源占用
-            self.driver.close()
+        if self.flag==False:
+            print("登录失败,请自行打开浏览器进行尝试登录")
+
 
 
     # 进行登录判断
@@ -83,18 +71,35 @@ class Xiaoyuan(object):
             self.driver.find_element(by=By.XPATH, value='//*[@id="login-account"]')
         except:
             self.flag = True
+            if self.flag == True:
+                if self.time_tuple[3] + 4 >= 24:
+                    print('检测到您已登录，请勿关闭本程序，下次释放重登时间为明日{}点{}分'.format(self.time_tuple[3] + 4 - 24, self.time_tuple[4]))
+                else:
+                    print('检测到您已登录，请勿关闭本程序，下次释放重登时间为{}点{}分'.format(self.time_tuple[3] + 4, self.time_tuple[4]))
+                # 关闭浏览器,减少资源占用
+                self.driver.close()
+                self.login_out()
+            else:
+                self.flag=False
 
     # 注销函数
     def login_out(self):
+
+        
         self.time_tuple = localtime(time())
+        
         sleep(4*60*60)
-        print("正在为您释放登录,当前时间为：{}点{}分".format(self.time_tuple[3],self.time_tuple[4]))
+        print("正在为您释放登录,当前时间为：{}点{}分".format(self.time_tuple[3], self.time_tuple[4]))
+        self.driver = webdriver.Edge(service=self.s, options=self.options)
+        self.driver.get(url=self.url)
+        # 点击注销按钮
         self.driver.find_element(by=By.XPATH, value='//*[@id="logout"]').click()
+        # 点击确认按钮
         self.driver.find_element(by=By.XPATH, value='/html/body/div[1]/div/div[2]/div[3]/button[1]').click()
         self.driver.close()
         self.login_in()
 
-    # 读取账号
+
     def red_user(self):
         with open('账号密码.json', 'r', encoding='utf8') as f:
             a = f.read()
@@ -105,7 +110,7 @@ class Xiaoyuan(object):
                 self.username = js["username"]
                 self.password = js["password"]
             f.close()
-    # 如果配置文件有误，或者不存在，则引导用户创建
+
     def write_file(self):
         print("配置文件有误，或不存在，请按提示操作")
         with open('账号密码.json', 'w', encoding='utf8') as f:
@@ -115,7 +120,7 @@ class Xiaoyuan(object):
             f.write(dumps(self.dic))
             f.close()
             self.login_in()
-    # 简单一个菜单
+
     def caidan(self):
         print(r'''
                                     ___.                  .__                         
